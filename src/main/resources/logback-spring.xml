@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+
+<configuration scan="true" scanPeriod="600 seconds">
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+    <springProfile name="local">
+        <!-- root 로그 레벨-->
+        <root level="debug">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <!-- was로그 로그 설정(기본 rolling 포맷) -->
+        <appender name="FILE_LOG_WAS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/was-log.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <charset>utf-8</charset>
+                <!-- <Pattern>%d %-5level [%thread] [%X{url}] %logger{5}: %msg%n</Pattern> -->
+                <pattern>%d %-5level [%thread] %-30logger{5}: %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!-- root 로그 설정 -->
+        <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>512</queueSize>
+            <appender-ref ref="FILE_LOG_WAS" />
+        </appender>
+
+
+        <!-- root 로그 레벨-->
+        <root level="debug">
+            <!-- <appender-ref ref="CONSOLE" /> -->
+            <appender-ref ref="ASYNC" />
+        </root>
+    </springProfile>
+
+    <logger name="org.hibernate.validator" level="WARN" />
+    <logger name="org.hibernate" level="WARN" />
+    <logger name="org.hibernate.ejb.HibernatePersistence" level="OFF" />
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.springframework.web" level="INFO" />
+    <logger name="org.springframework.security" level="WARN" />
+    <logger name="org.springframework.cache" level="WARN" />
+    <logger name="_org.springframework.web.servlet.HandlerMapping.Mappings" level="INFO" />
+    <logger name="org.apache" level="WARN" />
+
+</configuration>
