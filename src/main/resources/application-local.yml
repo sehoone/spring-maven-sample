@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    # add database info
+    url: 
+    username: 
+    password: 
