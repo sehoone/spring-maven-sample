@@ -1,3 +1,7 @@
 server:
   port: 8080
 
+spring:
+  profiles:
+    # 디폴트 profile. jar or 로컬서버 실행할때 환경변수로 '--spring.profiles.active=xxx' 를 하면 환경변수값으로 override 됨 
+    active: local
