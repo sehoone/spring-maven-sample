@@ -52,11 +52,11 @@ git clone https://github.com/sehoone/spring-maven-sample.git
 - Installation dependencies
 ```sh
 cd spring-maven-sample
-./gradlew bootjar
+./mvnw inatall
 ```
 - run boot jar
 ```sh
-nohup java -Dspring.profiles.active=dev -Dserver.port=8443 -jar build/libs/nugu-proxy-server-0.0.1-SNAPSHOT.jar &
+nohup java -Dspring.profiles.active=dev -Dserver.port=8443 -jar target/spring-maven-sample-0.0.1-SNAPSHOT.jar &
 ```
 
 ## Source Structure
