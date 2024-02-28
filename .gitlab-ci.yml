@@ -1,0 +1,26 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+
+stages:
+  - build
+  - deploy
+
+maven-build:
+  stage: build
+  image: maven:3.6.3-openjdk-11
+  script:
+    - mvn spring-boot:build-image -Dspring-boot.build-image.imageName=spring-maven-sample
+  tags:
+    - sample-gitlab-runner
+
+docker-deploy:
+  stage: deploy
+  script:
+    - echo $CI_PIPELINE_IID
+    - docker ps -a -q --filter="name=spring-maven-sample" | xargs --no-run-if-empty docker rm -f
+    - docker run -d -e SPRING_PROFILES_ACTIVE=dev -e TZ=Asia/Seoul -e LOG_PATH=/logs -p 4250:8080 -v /home/pmsdev/volumes/spring-maven-sample/logs:/logs:rw -u "$(id -u 1001):$(id -g 1001)" --name spring-maven-sample spring-maven-sample
+    - docker images -q paketobuildpacks/builder -f "dangling=true" | xargs --no-run-if-empty docker rmi
+    - docker images -q spring-maven-sample -f "dangling=true" | xargs --no-run-if-empty docker rmi
+  tags:
+    - sample-gitlab-runner
