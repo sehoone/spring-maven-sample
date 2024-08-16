@@ -2,18 +2,25 @@ package com.sehoon.springmavensample.common.advice;
 
 import java.nio.file.AccessDeniedException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.sehoon.springmavensample.common.dto.ApiExceptionDTO;
-import com.sehoon.springmavensample.common.enums.ExceptionEnum;
 import com.sehoon.springmavensample.common.exception.ApiException;
+import com.sehoon.springmavensample.common.res.ApiResponse;
+import com.sehoon.springmavensample.common.res.ResultCode;
 
-import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class ExceptionAdvice {
 
@@ -23,17 +30,20 @@ public class ExceptionAdvice {
      * @param e
      * @return
      */
-    @ExceptionHandler({ ApiException.class })
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final ApiException e) {
+    @ExceptionHandler({ApiException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final ApiException e) {
 
-        String message = StringUtils.defaultString(e.getMessage(), e.getError().getMessage());
-
+        String message = StringUtils.defaultString(e.getMessage(), e.getError().getMsg());
+        // e.getError().getCode();
+        // return ResponseEntity
+        //         .status(e.getError().getStatus())
+        //         .body(ApiExceptionDTO.builder()
+        //                 .code(e.getError().getCode())
+        //                 .msg(message)
+        //                 .build());
         return ResponseEntity
-                .status(e.getError().getStatus())
-                .body(ApiExceptionDTO.builder()
-                        .errorCode(e.getError().getCode())
-                        .errorMessage(message)
-                        .build());
+                .status(HttpStatus.OK)
+                .body(ApiResponse.fail(e.getError().getCode(), message));    
     }
 
     /**
@@ -42,68 +52,141 @@ public class ExceptionAdvice {
      * @param e
      * @return
      */
-    @ExceptionHandler({ RuntimeException.class })
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final RuntimeException e) {
-        e.printStackTrace();
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final RuntimeException e) {
+        log.error("RuntimeException ", e);
         return ResponseEntity
-                .status(ExceptionEnum.BAD_REQUEST_EXCEPTION.getStatus())
-                .body(ApiExceptionDTO.builder()
-                        .errorCode(ExceptionEnum.BAD_REQUEST_EXCEPTION.getCode())
-                        .errorMessage(e.getMessage())
-                        .build());
+                .status(ResultCode.BAD_REQUEST.getStatus())
+                .build();
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiResponse.fail(ResultCode.BAD_REQUEST.getCode(), e.getMessage()));    
     }
 
     /**
-     * AccessDeniedException 처리. 권한이 없는 경우 처리
+     * InsufficientAuthenticationException 처리. 인증 예외 처리
      * @param request
      * @param e
      * @return
      */
-    @ExceptionHandler({ AccessDeniedException.class })
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request,
-            final AccessDeniedException e) {
-        e.printStackTrace();
+    @ExceptionHandler({InsufficientAuthenticationException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final InsufficientAuthenticationException e) {
+        log.error("InsufficientAuthenticationException ", e);
         return ResponseEntity
-                .status(ExceptionEnum.ACCESS_DENIED_EXCEPTION.getStatus())
-                .body(ApiExceptionDTO.builder()
-                        .errorCode(ExceptionEnum.ACCESS_DENIED_EXCEPTION.getCode())
-                        .errorMessage(e.getMessage())
-                        .build());
+        .status(ResultCode.UNAUTHORIZED.getStatus())
+        .build();
+        // return ResponseEntity
+        //         .status(ResultCode.UNAUTHORIZED.getStatus())
+        //         .body(ApiExceptionDTO.builder()
+        //                 .code(ResultCode.UNAUTHORIZED.getCode())
+        //                 .msg(e.getMessage())
+        //                 .build());
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiResponse.fail(ResultCode.UNAUTHORIZED.getCode(), e.getMessage()));    
     }
 
     /**
-     * MethodArgumentNotValidException 처리. @Valid 검증 실패시 처리
+     * AccessDeniedException 처리. 권한 예외 처리
      * @param request
      * @param e
      * @return
      */
-    @ExceptionHandler({ MethodArgumentNotValidException.class })
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request,
-            final MethodArgumentNotValidException e) {
-        e.printStackTrace();
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final AccessDeniedException e) {
+        log.error("AccessDeniedException ", e);
         return ResponseEntity
-                .status(ExceptionEnum.ARGUMENT_NOT_VALIDATION_EXCEPTION.getStatus())
-                .body(ApiExceptionDTO.builder()
-                        .errorCode(ExceptionEnum.ARGUMENT_NOT_VALIDATION_EXCEPTION.getCode())
-                        .errorMessage(e.getBindingResult().getAllErrors().get(0)
-                                .getDefaultMessage())
-                        .build());
+        .status(ResultCode.UNAUTHORIZED.getStatus())
+        .build();
+        // return ResponseEntity
+        //         .status(ResultCode.UNAUTHORIZED.getStatus())
+        //         .body(ApiExceptionDTO.builder()
+        //                 .code(ResultCode.UNAUTHORIZED.getCode())
+        //                 .msg(e.getMessage())
+        //                 .build());
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiResponse.fail(ResultCode.UNAUTHORIZED.getCode(), e.getMessage()));    
     }
-
+    
     /**
-     * Exception 처리. 그 외 예외 처리
+     * MethodArgumentNotValidException 처리. Validation 예외 처리
      * @param request
      * @param e
      * @return
      */
-    @ExceptionHandler({ Exception.class })
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final Exception e) {
-        e.printStackTrace();
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValidException ", e);
+        String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        String field = e.getBindingResult().getFieldError().getField();
+    
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiExceptionDTO.builder()
+        //                 .code(ResultCode.BAD_REQUEST.getCode())
+        //                 .msg("요청값 '"+ field +"' 가 유효하지 않습니다. "+message)
+        //                 .build());
         return ResponseEntity
-                .status(ExceptionEnum.INTERNAL_SERVER_ERROR.getStatus())
-                .body(ApiExceptionDTO.builder()
-                        .errorCode(ExceptionEnum.INTERNAL_SERVER_ERROR.getCode())
-                        .errorMessage(e.getMessage())
-                        .build());
+                .status(HttpStatus.OK)
+                .body(ApiResponse.fail(ResultCode.BAD_REQUEST.getCode(), "요청값 '"+ field +"' 가 유효하지 않습니다. "+message));    
+    }
+
+    /**
+     * MissingServletRequestParameterException 처리. 필수 파라미터 누락 예외 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final MissingServletRequestParameterException e) {
+        log.error("MissingServletRequestParameterException ", e);
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiExceptionDTO.builder()
+        //                 .code(ResultCode.BAD_REQUEST.getCode())
+        //                 .msg(e.getMessage())
+        //                 .build());
+        return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(ApiResponse.fail(ResultCode.BAD_REQUEST.getCode(), e.getMessage()));
+    }
+
+    /**
+     * ConstraintViolationException 처리. Validation 예외 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final ConstraintViolationException e) {
+        log.error("ConstraintViolationException ", e);
+
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiExceptionDTO.builder()
+        //                 .code(ResultCode.BAD_REQUEST.getCode())
+        //                 .msg(e.getMessage())
+        //                 .build());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.fail(ResultCode.BAD_REQUEST.getCode(), e.getMessage()));    
+    }
+
+    /**
+     * Exception 처리. 기타 예외 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<ApiResponse<Void>> exceptionHandler(HttpServletRequest request, final Exception e) {
+        log.error("Exception ", e);
+        return ResponseEntity
+                .status(ResultCode.SERVER_ERROR.getStatus())
+                .build();
+        // return ResponseEntity
+        //         .status(HttpStatus.OK)
+        //         .body(ApiResponse.fail(ResultCode.SERVER_ERROR.getCode(), e.getMessage()));    
     }
 }

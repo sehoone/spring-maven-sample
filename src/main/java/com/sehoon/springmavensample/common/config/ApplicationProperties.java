@@ -18,5 +18,5 @@ public class ApplicationProperties {
     private long tokenValidityInSecondsForRememberMe;
 
     private String contentSecurityPolicy;
-
+    private String serverDomain;
 }

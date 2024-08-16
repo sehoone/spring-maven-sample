@@ -1,18 +1,19 @@
 package com.sehoon.springmavensample.common.exception;
 
+import com.sehoon.springmavensample.common.res.ResultCode;
+
 import lombok.Getter;
-import com.sehoon.springmavensample.common.enums.ExceptionEnum;
 
 @Getter
 public class ApiException extends RuntimeException {
-    private ExceptionEnum error;
+    private ResultCode error;
 
-    public ApiException(ExceptionEnum e) {
-        super(e.getMessage());
+    public ApiException(ResultCode e) {
+        super(e.getMsg());
         this.error = e;
     }
 
-    public ApiException(ExceptionEnum e, String message) {
+    public ApiException(ResultCode e, String message) {
         super(message);
         this.error = e;
     }
