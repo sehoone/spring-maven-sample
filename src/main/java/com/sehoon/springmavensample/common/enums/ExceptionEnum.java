@@ -14,7 +14,6 @@ public enum ExceptionEnum {
     ARGUMENT_NOT_VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "E0004"),
     RESOURCE_IS_EXIST_EXCEPTION(HttpStatus.BAD_REQUEST, "E0001", "resource is already exist"),
     RESOURCE_NOT_FOUND_EXCEPTION(HttpStatus.BAD_REQUEST, "E0001", "resource not found");
-    
 
     private final HttpStatus status;
     private final String code;

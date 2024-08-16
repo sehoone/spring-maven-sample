@@ -16,7 +16,14 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
-    @ExceptionHandler({ApiException.class})
+
+    /**
+     * ApiException 처리. 비즈니스 로직에서 발생하는 예외 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ ApiException.class })
     public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final ApiException e) {
 
         String message = StringUtils.defaultString(e.getMessage(), e.getError().getMessage());
@@ -29,7 +36,13 @@ public class ExceptionAdvice {
                         .build());
     }
 
-    @ExceptionHandler({RuntimeException.class})
+    /**
+     * RuntimeException 처리. 런타임 예외 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ RuntimeException.class })
     public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final RuntimeException e) {
         e.printStackTrace();
         return ResponseEntity
@@ -40,8 +53,15 @@ public class ExceptionAdvice {
                         .build());
     }
 
-    @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final AccessDeniedException e) {
+    /**
+     * AccessDeniedException 처리. 권한이 없는 경우 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request,
+            final AccessDeniedException e) {
         e.printStackTrace();
         return ResponseEntity
                 .status(ExceptionEnum.ACCESS_DENIED_EXCEPTION.getStatus())
@@ -50,19 +70,33 @@ public class ExceptionAdvice {
                         .errorMessage(e.getMessage())
                         .build());
     }
-    
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final MethodArgumentNotValidException e) {
+
+    /**
+     * MethodArgumentNotValidException 처리. @Valid 검증 실패시 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ MethodArgumentNotValidException.class })
+    public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request,
+            final MethodArgumentNotValidException e) {
         e.printStackTrace();
         return ResponseEntity
                 .status(ExceptionEnum.ARGUMENT_NOT_VALIDATION_EXCEPTION.getStatus())
                 .body(ApiExceptionDTO.builder()
                         .errorCode(ExceptionEnum.ARGUMENT_NOT_VALIDATION_EXCEPTION.getCode())
-                        .errorMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage())
+                        .errorMessage(e.getBindingResult().getAllErrors().get(0)
+                                .getDefaultMessage())
                         .build());
     }
 
-    @ExceptionHandler({Exception.class})
+    /**
+     * Exception 처리. 그 외 예외 처리
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ Exception.class })
     public ResponseEntity<ApiExceptionDTO> exceptionHandler(HttpServletRequest request, final Exception e) {
         e.printStackTrace();
         return ResponseEntity

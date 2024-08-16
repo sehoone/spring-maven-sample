@@ -5,6 +5,9 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import lombok.Data;
 
+/**
+ * 커스텀 application properties
+ */
 @Data
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {

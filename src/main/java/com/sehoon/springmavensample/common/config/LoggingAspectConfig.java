@@ -13,6 +13,11 @@ import com.sehoon.springmavensample.common.logging.LoggingAspect;
 @EnableAspectJAutoProxy
 public class LoggingAspectConfig {
 
+    /**
+     * 로깅 Aspect 설정
+     * @param env
+     * @return
+     */
     @Bean
     @Profile({ApplicationConstant.SPRING_PROFILE_DEVELOPMENT, ApplicationConstant.SPRING_PROFILE_LOCAL})
     public LoggingAspect loggingAspect(Environment env) {

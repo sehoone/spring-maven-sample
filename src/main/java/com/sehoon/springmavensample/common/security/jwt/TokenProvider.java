@@ -24,23 +24,19 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-// @RequiredArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
-
     private static final String INVALID_JWT_TOKEN = "Invalid JWT token.";
-
     private final Key key;
-
     private final JwtParser jwtParser;
-
     private final long tokenValidityInMilliseconds;
-
     private final long tokenValidityInMillisecondsForRememberMe;
 
     // private final ApplicationProperties applicationProperties;
@@ -65,6 +61,12 @@ public class TokenProvider {
         // this.loginGuardService = loginGuardService;
     }
 
+    /**
+     * 토큰 생성
+     * @param authentication
+     * @param rememberMe
+     * @return String
+     */
     public String createTokenByAuthentication(Authentication authentication, boolean rememberMe) {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
@@ -85,6 +87,11 @@ public class TokenProvider {
             .compact();
     }
 
+    /**
+     * 토큰으로 인증정보 가져오기
+     * @param token
+     * @return Authentication
+     */
     public Authentication getAuthentication(String token) {
         Claims claims = jwtParser.parseClaimsJws(token).getBody();
 
@@ -99,6 +106,12 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+    /**
+     * 토큰으로 토큰 생성
+     * @param token
+     * @param rememberMe
+     * @return String
+     */
     public String createTokenByToken(String token, boolean rememberMe) {
         String username = getUserNameFromJwtToken(token);
 
@@ -127,10 +140,20 @@ public class TokenProvider {
             .compact();
     }
 
+    /**
+     * 토큰에서 유저명 가져오기
+     * @param token
+     * @return String
+     */
     public String getUserNameFromJwtToken(String token) {
         return jwtParser.parseClaimsJws(token).getBody().getSubject();
     }
 
+    /**
+     * 토큰 유효성 검사
+     * @param authToken
+     * @return boolean
+     */
     public boolean validateToken(String authToken) {
         try {
             jwtParser.parseClaimsJws(authToken);

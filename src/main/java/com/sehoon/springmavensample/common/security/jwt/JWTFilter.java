@@ -14,8 +14,8 @@ import org.springframework.web.filter.GenericFilterBean;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Filters incoming requests and installs a Spring Security principal if a header corresponding to a valid user is
- * found.
+ * jwt 필터
+ * jwt을 검증하고 SecurityContext에 인증 정보를 설정한다.
  */
 @Slf4j
 public class JWTFilter extends GenericFilterBean {
