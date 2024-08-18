@@ -18,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
- * Base abstract class for entities which will hold definitions for created, last modified, created by,
- * last modified by attributes.
+ * AbstractAuditingEntity
+ * entity 생성, 수정 정보를 관리하기 위한 추상 클래스
  */
 @Data
 @MappedSuperclass

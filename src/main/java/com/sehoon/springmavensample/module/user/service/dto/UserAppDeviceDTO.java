@@ -9,22 +9,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserAppDeviceDTO {
 
-    private Long id;
-    private String account;
-    private String password;
-    private String name;
-    private String emailAddr;
-    private String phoneNumber;
-    private String engName;
-    private String departmentName;
-    private String positionName;
-    private String profileUrl;
+    private Long id; // user device id
+    private String account; // 계정
+    private String password; // 비밀번호
+    private String name; // 이름
+    private String emailAddr; // 이메일
+    private String phoneNumber; // 전화번호
+    private String engName; // 영문명
+    private String departmentName; // 부서명
+    private String positionName; // 직위명
+    private String profileUrl; // 프로필 URL
     
-    private Long appDviceid;
-    private String uuid;
-    private String osCode;
-    private String appVersion;
-    private String deviceInfo;
-    private String pinAuthKey;
-    private String bioAuthKey;
+    private Long appDviceid; // app device id
+    private String uuid; // uuid
+    private String osCode; // os code
+    private String appVersion; // 앱버젼
+    private String deviceInfo; // 디바이스 정보
+    private String pinAuthKey; // pin 인증키
+    private String bioAuthKey; // bio 인증키
 }

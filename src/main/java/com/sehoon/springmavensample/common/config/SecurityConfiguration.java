@@ -17,8 +17,9 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import com.sehoon.springmavensample.common.security.jwt.JWTFilter;
 
-
-
+/**
+ * Spring Security 설정
+ */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Import(SecurityProblemSupport.class)
@@ -39,11 +40,20 @@ public class SecurityConfiguration {
         this.applicationProperties = applicationProperties;
     }
 
+    /**
+     * PasswordEncoder 빈 등록
+     * JWT 토큰 검증 시 사용
+     * @return
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * WebSecurityCustomizer 빈 등록
+     * @return
+     */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web ->
@@ -57,11 +67,21 @@ public class SecurityConfiguration {
                 .antMatchers("/test/**");
     }
 
+    /**
+     * JWT 필터 빈 등록
+     * @return
+     */
 	@Bean
 	public JWTFilter authenticationJwtTokenFilter() {
 		return new JWTFilter();
 	}
     
+    /**
+     * Spring Security 필터 체인 설정
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // @formatter:off

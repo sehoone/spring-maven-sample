@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * API 예외 DTO
+ */
 @Getter
 @ToString
 public class ApiExceptionDTO {

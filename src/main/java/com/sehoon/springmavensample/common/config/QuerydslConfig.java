@@ -11,6 +11,9 @@ import com.querydsl.jpa.sql.JPASQLQuery;
 import com.querydsl.sql.DerbyTemplates;
 import com.querydsl.sql.SQLTemplates;
 
+/**
+ * Querydsl 설정
+ */
 @Configuration
 public class QuerydslConfig {
 	@Autowired
